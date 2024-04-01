@@ -17,6 +17,10 @@ impl Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    Init {
+        #[arg(short, long)]
+        name: String,
+    },
     Test {
         #[arg(short, long)]
         text: String,

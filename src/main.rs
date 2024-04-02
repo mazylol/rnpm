@@ -8,12 +8,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     match &cli.command {
         Some(Commands::Init { name }) => {
-            return fs::create_package_json(name.clone());
-        },
+            return fs::PackageJson::create_package_json(name.clone());
+        }
         Some(Commands::Test { text }) => {
-            println!("{}", text);
-        },
-        None => {},
+            println!("{:?}", fs::PackageJson::read_package_json().unwrap());
+        }
+        None => {}
     }
 
     Ok(())

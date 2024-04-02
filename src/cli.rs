@@ -24,5 +24,5 @@ pub enum Commands {
     Test {
         #[arg(short, long)]
         text: String,
-    }
+    },
 }

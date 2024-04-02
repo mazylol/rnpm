@@ -10,7 +10,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(Commands::Init { name }) => {
             return fs::PackageJson::create_package_json(name.clone());
         }
-        Some(Commands::Test { text }) => {
+        Some(Commands::Test {}) => {
             println!("{:?}", fs::PackageJson::read_package_json().unwrap());
         }
         None => {}

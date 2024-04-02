@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    env,
     fs::{self, File},
     io::Write,
 };
@@ -39,11 +40,24 @@ impl Default for PackageJson {
 }
 
 impl PackageJson {
-    pub fn create_package_json(name: String) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn create_package_json(mut name: Option<String>) -> Result<(), Box<dyn std::error::Error>> {
         let mut file = File::create_new("package.json").expect("Failed to create package.json");
 
         let package_json = PackageJson {
-            name: Some(name.clone()),
+            name: if name.is_none() {
+                name = Some(
+                    env::current_dir()
+                        .expect("Failed to get current directory")
+                        .file_name()
+                        .expect("Failed to get file name")
+                        .to_str()
+                        .expect("Failed to convert to string")
+                        .to_string(),
+                );
+                name.clone()
+            } else {
+                name.clone()
+            },
             ..Default::default()
         };
 

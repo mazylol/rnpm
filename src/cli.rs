@@ -19,10 +19,7 @@ impl Cli {
 pub enum Commands {
     Init {
         #[arg(short, long)]
-        name: String,
+        name: Option<String>,
     },
-    Test {
-        #[arg(short, long)]
-        text: String,
-    },
+    Test {},
 }

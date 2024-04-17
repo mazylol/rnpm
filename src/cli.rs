@@ -17,12 +17,13 @@ impl Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    Add {
+        package: String,
+    },
     Init {
         #[arg(short, long)]
         name: Option<String>,
     },
+    Install {},
     Test {},
-    Add {
-        package: String,
-    },
 }

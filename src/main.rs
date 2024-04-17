@@ -35,6 +35,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             let _ = request::download_package(package, &url).await;
         }
+        Some(Commands::Install {}) => {
+            let package_json = fs::PackageJson::read_package_json_cleaned()?;
+
+            for key in package_json.dependencies.keys() {
+                let response = request::get_package(key).await?;
+                let version = response.dist_tags.get("latest").unwrap();
+                let package_version = response.versions.get(version).unwrap();
+                let url = package_version.dist.tarball.clone();
+
+                let _ = request::download_package(key, &url).await;
+            }
+        }
         None => {}
     }
 

@@ -17,7 +17,7 @@ pub struct PackageJson {
     pub keywords: Option<Vec<String>>,
     pub author: Option<String>,
     pub license: Option<String>,
-    pub dependencies: Option<HashMap<String, String>>,
+    pub dependencies: HashMap<String, String>,
     #[serde(rename = "devDependencies")]
     pub dev_dependencies: Option<HashMap<String, String>>,
 }
@@ -33,7 +33,7 @@ impl Default for PackageJson {
             keywords: Some(Vec::new()),
             author: Some(String::from("")),
             license: Some(String::from("ISC")),
-            dependencies: Some(HashMap::new()),
+            dependencies: HashMap::new(),
             dev_dependencies: Some(HashMap::new()),
         }
     }
@@ -78,5 +78,29 @@ impl PackageJson {
             .expect("Failed to deserialize package.json");
 
         Ok(package_json)
+    }
+
+    pub fn save_package_json(package: PackageJson) -> Result<(), Box<dyn std::error::Error>> {
+        let package_json_str =
+            serde_json::to_string_pretty(&package).expect("Failed to serialize package.json");
+
+        std::fs::remove_file("package.json")?;
+
+        let mut file = File::create_new("package.json").expect("Failed to create package.json");
+
+        file.write_all(package_json_str.as_bytes())
+            .expect("Failed to write package.json");
+
+        Ok(())
+    }
+
+    pub fn add_dependency(
+        &mut self,
+        name: String,
+        version: String,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        self.dependencies.insert(name, version);
+
+        Ok(())
     }
 }

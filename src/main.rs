@@ -15,11 +15,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(Commands::Test {}) => {
             println!("{:?}", fs::PackageJson::read_package_json().unwrap());
         }
-        Some(Commands::Install { package }) => {
+        Some(Commands::Add { package }) => {
             let response = request::get_package(package).await?;
             let version = response.dist_tags.get("latest").unwrap();
             let package_version = response.versions.get(version).unwrap();
             let url = package_version.dist.tarball.clone();
+
+            let mut package_json = fs::PackageJson::read_package_json()?;
+
+            package_json.add_dependency(
+                package_version.name.clone(),
+                package_version.version.clone(),
+            )?;
+
+            fs::PackageJson::save_package_json(package_json)?;
+
             let _ = request::download_package(package, &url).await;
         }
         None => {}

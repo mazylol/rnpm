@@ -22,7 +22,7 @@ pub enum Commands {
         name: Option<String>,
     },
     Test {},
-    Install {
+    Add {
         package: String,
     },
 }

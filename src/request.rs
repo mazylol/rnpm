@@ -78,7 +78,12 @@ pub async fn download_package(name: &str, url: &str) -> Result<()> {
         for entry in std::fs::read_dir(entry.path())? {
             // use fs_extra because filesystem boundaries
             let entry = entry?;
-            fs_extra::copy_items(&vec![entry.path()], "node_modules/".to_string() + &name, &fs_extra::dir::CopyOptions::new()).unwrap();
+            fs_extra::copy_items(
+                &vec![entry.path()],
+                "node_modules/".to_string() + &name,
+                &fs_extra::dir::CopyOptions::new(),
+            )
+            .unwrap();
         }
     }
 

@@ -13,7 +13,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             return fs::PackageJson::create_package_json(name.clone());
         }
         Some(Commands::Test {}) => {
-            println!("{:?}", fs::PackageJson::read_package_json().unwrap());
+            println!(
+                "{:?}",
+                fs::PackageJson::read_package_json_saveable().unwrap()
+            );
         }
         Some(Commands::Add { package }) => {
             let response = request::get_package(package).await?;
@@ -21,7 +24,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let package_version = response.versions.get(version).unwrap();
             let url = package_version.dist.tarball.clone();
 
-            let mut package_json = fs::PackageJson::read_package_json()?;
+            let mut package_json = fs::PackageJson::read_package_json_saveable()?;
 
             package_json.add_dependency(
                 package_version.name.clone(),

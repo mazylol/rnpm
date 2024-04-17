@@ -70,12 +70,39 @@ impl PackageJson {
         Ok(())
     }
 
-    pub fn read_package_json() -> Result<PackageJson, Box<dyn std::error::Error>> {
+    pub fn read_package_json_saveable() -> Result<PackageJson, Box<dyn std::error::Error>> {
         let package_json_contents =
             fs::read_to_string("package.json").expect("Failed to read package.json");
 
         let package_json: PackageJson = serde_json::from_str(&package_json_contents)
             .expect("Failed to deserialize package.json");
+
+        Ok(package_json)
+    }
+
+    #[allow(dead_code)]
+    pub fn read_package_json_cleaned() -> Result<PackageJson, Box<dyn std::error::Error>> {
+        let package_json_contents =
+            fs::read_to_string("package.json").expect("Failed to read package.json");
+
+        let mut package_json: PackageJson = serde_json::from_str(&package_json_contents)
+            .expect("Failed to deserialize package.json");
+
+        for key in package_json.clone().dependencies.keys() {
+            let val = String::from(package_json.dependencies.get(key).unwrap());
+
+            if val.contains('^') {
+                package_json
+                    .dependencies
+                    .insert(key.to_string(), val.replace('^', ""));
+            }
+
+            if val.contains('~') {
+                package_json
+                    .dependencies
+                    .insert(key.to_string(), val.replace('~', ""));
+            }
+        }
 
         Ok(package_json)
     }

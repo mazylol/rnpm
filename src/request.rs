@@ -66,8 +66,7 @@ error_chain! {
 pub async fn download_package(name: &str, url: &str) -> Result<()> {
     let tarball = reqwest::get(url).await?.bytes().await?;
     let mut archive = Archive::new(GzDecoder::new(&tarball[..]));
-    let temp_dir = Builder::new().prefix(name).tempdir().unwrap();
-    println!("{:?}", temp_dir.path());
+    let temp_dir = Builder::new().prefix(&name.replace('/', "")).tempdir().unwrap();
     archive.unpack(temp_dir.path())?;
 
     std::fs::create_dir_all(format!("node_modules/{}", name))?;

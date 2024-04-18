@@ -36,7 +36,6 @@ pub struct RegistryResponse {
     #[serde(rename = "dist-tags")]
     pub dist_tags: HashMap<String, String>,
     pub versions: HashMap<String, PackageVersion>,
-    pub modified: String,
 }
 
 pub async fn get_package(
@@ -46,7 +45,6 @@ pub async fn get_package(
 
     let body = client
         .get(format!("https://registry.npmjs.org/{}", package_name))
-        .header("Accept", "application/vnd.npm.install-v1+json")
         .send()
         .await?;
 
@@ -68,7 +66,8 @@ error_chain! {
 pub async fn download_package(name: &str, url: &str) -> Result<()> {
     let tarball = reqwest::get(url).await?.bytes().await?;
     let mut archive = Archive::new(GzDecoder::new(&tarball[..]));
-    let temp_dir = Builder::new().prefix(name).tempdir()?;
+    let temp_dir = Builder::new().prefix(name).tempdir().unwrap();
+    println!("{:?}", temp_dir.path());
     archive.unpack(temp_dir.path())?;
 
     std::fs::create_dir_all(format!("node_modules/{}", name))?;

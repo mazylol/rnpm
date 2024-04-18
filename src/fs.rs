@@ -17,7 +17,7 @@ pub struct PackageJson {
     pub keywords: Option<Vec<String>>,
     pub author: Option<String>,
     pub license: Option<String>,
-    pub dependencies: HashMap<String, String>,
+    pub dependencies: Option<HashMap<String, String>>,
     #[serde(rename = "devDependencies")]
     pub dev_dependencies: Option<HashMap<String, String>>,
 }
@@ -33,7 +33,7 @@ impl Default for PackageJson {
             keywords: Some(Vec::new()),
             author: Some(String::from("")),
             license: Some(String::from("ISC")),
-            dependencies: HashMap::new(),
+            dependencies: Some(HashMap::new()),
             dev_dependencies: Some(HashMap::new()),
         }
     }
@@ -88,18 +88,23 @@ impl PackageJson {
         let mut package_json: PackageJson = serde_json::from_str(&package_json_contents)
             .expect("Failed to deserialize package.json");
 
-        for key in package_json.clone().dependencies.keys() {
-            let val = String::from(package_json.dependencies.get(key).unwrap());
+        for key in package_json.clone().dependencies.unwrap().keys() {
+            let val = String::from(package_json.dependencies.clone().unwrap().get(key).unwrap());
 
             if val.contains('^') {
                 package_json
                     .dependencies
+                    .as_mut()
+                    .unwrap()
                     .insert(key.to_string(), val.replace('^', ""));
             }
 
             if val.contains('~') {
                 package_json
+                    .clone()
                     .dependencies
+                    .as_mut()
+                    .unwrap()
                     .insert(key.to_string(), val.replace('~', ""));
             }
         }
@@ -126,7 +131,7 @@ impl PackageJson {
         name: String,
         version: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        self.dependencies.insert(name, version);
+        self.dependencies.as_mut().unwrap().insert(name, version);
 
         Ok(())
     }

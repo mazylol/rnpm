@@ -25,5 +25,4 @@ pub enum Commands {
         name: Option<String>,
     },
     Install {},
-    Test {},
 }

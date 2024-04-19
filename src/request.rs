@@ -45,6 +45,7 @@ pub async fn get_package(
 
     let body = client
         .get(format!("https://registry.npmjs.org/{}", package_name))
+        .header("Accept", "application/vnd.npm.install-v1+json")
         .send()
         .await?;
 
